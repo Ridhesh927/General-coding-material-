@@ -1,0 +1,747 @@
+#insert mutiple values into a table 
+insert into emp 
+values(1,"MR.nigga","Black man",25.50,"2023-01-22"),
+	  (2,"MR.White","White man",30.00,"2022-04-25"),
+	  (3,"MR.Brown","Brown man",35.00,"2021-11-25"),
+	  (4,"MR.Heat","Heat man",40.50,"2025-01-26");
+      
+select * from emp;
+
+
+insert into emp(emp_id,first_name,last_name) 
+values(5,"MR.superman","super man");
+      
+select * from emp;
+
+#select values from secific 
+
+select first_name,last_name
+from emp;
+
+select last_name,first_name
+from emp;
+
+select * from emp 
+WHERE emp_id=1;
+
+select * from emp 
+WHERE hourly_pay >=15;
+
+select * from emp 
+WHERE hire_date <="2023-01-25";
+
+select * from emp 
+WHERE emp_id != 1;
+
+select * from emp 
+WHERE  hire_date is null;
+
+
+select * from emp 
+WHERE  hire_date is not null;
+
+update emp
+set hourly_pay = 10.25,
+  hire_date = "2025-03-05"
+Where emp_id = 5;
+
+update emp
+
+ set hire_date = NULL
+Where emp_id = 5;
+
+delete from emp
+where emp_id = 1;
+
+select * from emp;
+
+SET autocommit =off;  #this to to save the data manually if by any chance we delete the data from about table 
+ROLLBACK;   # to go back and rechange the mistake we have done we use this 
+COMMIT;    # this is use to save any change happened in the the query or the change we made
+
+
+CREATE TABLE test(
+  my_date DATE, 
+  my_time TIME,
+  my_datatime DATETIME
+);
+INSERT INTO test 
+VALUES(current_date(),current_time(),now());   #use to get the current date and time for any current time use 
+INSERT INTO test 
+VALUES(current_date()+1,current_time(),now());  # +1 give to the date of tomorrow 
+INSERT INTO test 
+VALUES(current_date()-1,current_time(),now());  #-1 give to the date of yesterday 
+select* from test;
+DROP table test;
+
+# ADD Unqiue Constraints to the table which is already created 
+CREATE TABLE products (
+  product_id int ,
+  product_name VARCHAR(25),
+  price DECIMAL(4,2)
+);
+
+Alter table products    
+ ADD CONSTRAINT
+ UNIQUE (product_name);
+ 
+ INSERT into products
+ values (11,'Burger',3.23),
+		 (13,'pizza',5.23),
+          (14,'soda',7.23),
+           (15,'ice cream',9.23) ;
+ SELECT * from products;
+ 
+# NOT NULL Constraints
+
+for new table :- 
+					CREATE TABLE products (
+  product_id int ,
+  product_name VARCHAR(25),
+  price DECIMAL(4,2) NOT NULL
+);
+
+# TO MAKE THE NULL VALUE OF THE  TABLE ALREADY CREATE
+
+ALTER TABLE  products
+MODIFY price DECIMAL(4,2) NOT NULL
+
+# CHECK Constraints
+
+1) to add  check constraints in the new table  :- 
+					CREATE TABLE emp (
+emp_id int ,
+first_name varchar(50) ,
+last_name varchar(50) ,
+hourly_pay decimal(5,2) ,
+hire_date date
+CONSTRAINT chk_hourly_pay CHECK (hourly_pay >=10.00)
+);
+
+2) to add check constraints in a already created table :- 
+								ALTER table emp 
+ADD CONSTRAINT chk_hourly_pay CHECK (hourly_pay >=10.00);
+
+3) to drop the check constraints:- 
+ALTER table emp 
+DROP CONSTRAINT chk_hourly_pay;
+
+
+#Default constraints 
+
+1) to add in a new table:- 
+                  CREATE TABLE products (
+  product_id int ,
+  product_name VARCHAR(25),
+  price DECIMAL(4,2) DEFAULT 0.00
+);
+
+2) to  add in a already created table :- 
+					
+Alter TABLE products
+alter price set DEFAULT 0;
+
+Insert into products (product_id,product_name)
+values (16,"Straw"),
+		(17,"napkin"),
+        (18,"fork"),
+        (19,"spoon") ;
+
+#  PRIMARY KEY 
+1) ADD A PRIMARY KEY TO THE NEW TABLE 
+CREATE TABLE transactions (
+     transaction_id INT PRIMARY KEY,
+     amount DECIMAL(5,3)
+);
+insert into transactions 
+VALUES (2002,6.99);
+
+2) ADD A PRIMARY KEY TO THE ALREADY CREATED TABLE 
+ALTER TABLE transactions 
+ADD CONSTRAINT
+PRIMARY KEY(transaction_id);
+
+#  AUTO-INCREMENT
+1) add in new table 
+CREATE TABLE transactions (
+     transaction_id INT PRIMARY KEY AUTO_INCREMENT,
+     amount DECIMAL(5,3)
+     );
+insert into transactions (amount)
+values(5.99) ;    
+
+2) Add in already created table and start the id number as we need to start from 
+Alter table transactions
+AUTO_INCREMENT = 1000;  # here we have started the id number from 1000 we can start from any number we want 
+
+#FOREIGN KEY 
+CREATE TABLE cust (
+    cust_id int primary key AUTO_INCREMENT,
+    first_name varchar(50),
+    last_name varchar(50)
+     );
+insert into cust (first_name,last_name)
+values("hehe","hahaha"),
+	("lol","imao"),
+    ("huh","hmmm") ;
+	INSERT into trans(amount, cust_id)
+values (4.99,3),
+		(5.99,2),
+        (6.99,1),
+        (7.99,4) ;
+SELECT * from trans;
+
+SELECT * FROM cust;
+1) for new table 
+CREATE TABLE trans(
+     trans_id INT PRIMARY KEY AUTO_INCREMENT,
+     amount DECIMAL(5,3),
+     cust_id int ,
+     FOREIGN KEY (cust_id) REFERENCES cust(cust_id)
+     );
+SELECT * FROM trans;
+
+2) already created table :
+
+alter table trans
+drop FOREIGN KEY trans_ibfk_1;
+
+3) to name/to change the name of foreign key
+
+alter table trans 
+add CONSTRAINT fk_cust_id
+FOREIGN KEY (cust_id) REFERENCES cust(cust_id)
+
+# JOINTs in  sql 
+Insert into trans(amount,cust_id)
+values (1.00,null);
+SELECT * from trans;
+insert into cust (first_name,last_name)
+values("poffy","pop");
+SELECT * from cust;     
+
+1) INNER JOIN:
+SELECT trans_id ,amount,first_name,last_name from trans INNER join cust 
+on trans.cust_id = cust.cust_id; 
+
+2)LEFT JOIN:
+SELECT * from trans LEFT join cust 
+on trans.cust_id = cust.cust_id; 
+
+3) RIGHT JOIN :
+SELECT * from trans RIGHT join cust 
+on trans.cust_id = cust.cust_id; 
+
+#FUNCTIONS IN MYSQL CODE :-
+
+1) COUNT FUNCTION:-
+ select count(amount) AS COUNT     ## WE CAN GIVE NAME AS WE WANT TO THE OUTPUT ATTRIBUTE AFTER WRITING [AS ----NAME WE WANT----] 
+ from trans;
+
+2) MAX FUNCTION:-
+select max(amount) as MAX
+from trans;
+
+3) MIN FUNCTION :-
+select min(amount) as MIN
+from trans;
+
+4) SUM FUNCTION :-
+SELECT SUM(amount) as SUM
+from trans;
+
+5) CONCAT FUNCTIONS :-
+SELECT concat(first_name," ",last_name) as FULL_NAME
+from emp;
+
+#LOGICAL OPERATERS IN MYSQL
+
+ALTER TABLE emp 
+ADD column job varchar(25) after hourly_pay;
+UPDATE emp 
+SET  job = "slave  "
+where emp_id = 1;
+
+select * from emp;
+1) AND OPERATER:
+select * 
+from emp
+where emp_id < 2 AND job = "Manager";
+
+2) OR OPERATER:
+select * 
+from emp
+where emp_id < 3 or job = "Manager";
+
+3) NOT OPERATER:
+select * 
+from emp
+where  not  emp_id = 2;
+
+4) TWO OPERATERS IN ONE STATEMENTS NOT/OR/AND NOT /AND 
+select * 
+from emp
+WHERE NOT  emp_id = "2" AND NOT emp_id = "3";
+
+5) BETWEEN OPERATER:
+select * 
+from emp
+WHERE hire_date BETWEEN "2023-01-01" AND "2025-03-30";
+
+6) IN OPERATER:
+select * 
+from emp
+WHERE first_name IN ("MR.Heat","MR.nigga");
+
+#WILDCARDS CHAR 
+
+SELECT * FROM emp 
+WHERE first_name LIKE "m%";     # (%) RETURNS ALL THE REMAINING CHARS AFTER THE WORD
+
+SELECT * FROM emp 
+WHERE hire_date LIKE "2022%";    # RETURNS ALL THE DATES OF 2022 
+
+SELECT * FROM emp 
+WHERE last_name LIKE "%n";      # CHAR GIVEN AFTER % IS GIVEN FOR THE LAST CHAR IN THE NAME/STATEMENT
+
+SELECT * FROM emp 
+WHERE first_name LIKE "mr%";
+
+SELECT * FROM emp 
+WHERE job LIKE "_R";             # (_) USED TO GIVE ALL THE CHARS BEFORE THE WORD R IN THE STATEMENT
+
+SELECT * FROM emp 
+WHERE hire_date LIKE "2023-__-__";    # GIVE ALL DATES FROM THE YEAR 2023 
+
+SELECT * FROM emp 
+WHERE job LIKE "_l%";        #(_) GIVE THE CHAR BEFORE L AND (%) GIVE ALL THE REMAINING CHARS 
+
+# ORDER 
+1) ASCENDING :
+SELECT * FROM emp
+ORDER BY  last_name DESC;
+2) DECENDING :
+SELECT * FROM emp
+ORDER BY  last_name ASC;
+
+# LIMIT
+
+SELECT * FROM  cust
+LIMIT 2;
+ 
+SELECT * FROM  cust
+ORDER BY first_name LIMIT 2;   # NORMAL LIMITS Are USEFUL TO JOIN WITH ORDER BY CLASUE 
+
+SELECT * FROM  cust
+LIMIT 2,1;
+
+# UNION
+
+CREATE TABLE income (
+  income_name varchar(50) ,
+  amount INT
+);
+insert into income  
+values("orders",100000000),
+	  ("merchand",250000),
+      ("service",12500000);
+select * from income;
+
+CREATE TABLE expen (
+  iexpen_name varchar(50) ,
+  amount INT
+);
+insert into expen  
+values("wages",-10000),
+	  ("tax",-2500),
+      ("repairs",-125);
+select * from expen;
+
+SELECT * FROM expen
+UNION
+SELECT  * FROM income;
+
+
+SELECT first_name,last_name FROM EMP   
+UNION											# when cloumns are not equal we can select sepcific attriubtes 
+SELECT  first_name,last_name FROM CUST;
+
+# we can also use UNION ALL to even print duplicates from the both tables 
+
+# SELF JOIN :
+
+SELECT * from cust;
+ALTER TABLE CUST
+ADD referral_id INT ;
+
+UPDATE CUST
+SET referral_id = 1
+WHERE cust_id = 2;
+
+UPDATE CUST
+SET referral_id = 2
+WHERE cust_id = 4;
+
+SELECT a.cust_id,a.first_name,a.last_name,
+		CONCAT(b.first_name,b.last_name) AS "referred_by"
+ FROM CUST as a
+INNER JOIN cust as b
+ON a.referral_id = b.cust_id;
+
+SELECT a.cust_id,a.first_name,a.last_name,
+		CONCAT(b.first_name,b.last_name) AS "referred_by"
+ FROM CUST as a
+LEFT JOIN cust as b
+ON a.referral_id = b.cust_id;
+
+SELECT * FROM EMP;
+ALTER TABLE EMP
+ADD super_id int;
+
+UPDATE EMP 
+SET  super_id = 2
+WHERE emp_id = 2;
+
+SELECT * FROM EMP 
+AS a
+INNER JOIN emp as b 
+ON  a.super_id = b.emp_id;
+
+1)INNER JOIN :
+SELECT a.first_name , a.last_name ,
+		CONCAT(b.first_name,"",b.last_name) AS "report_to"
+FROM EMP  AS a
+INNER JOIN emp as b 
+ON  a.super_id = b.emp_id;
+
+2) LEFT JOINS:
+SELECT a.first_name , a.last_name ,
+		CONCAT(b.first_name,"",b.last_name) AS "report_to"
+FROM EMP  AS a
+LEFT JOIN emp as b 
+ON  a.super_id = b.emp_id;
+
+# VIEWS 
+SELECT * FROM EMP;
+
+CREATE VIEW  emp_attend AS 
+SELECT first_name,last_name 
+FROM  emp;
+SELECT * FROM emp_attend;
+DROP VIEW emp_attend;
+
+SELECT * FROM cust;
+insert into cust 
+values(6 ,"poop","dog",NULL,"POP@GMAIL.COM");    # IF WE CHANGE IN THE MAIN TABLE SO THE ALREADY CREATED VIEW WILL BE UPDATED AUTOMATICALLY 
+ALTER TABLE cust
+ADD COLUMN email varchar(50);
+UPDATE cust
+SET email ="poffy2@gmail,.com"
+where cust_id = 5;
+
+CREATE VIEW cust_email AS 
+SELECT email
+from cust;
+select * from cust_email;
+
+
+# INDEX 
+
+INDEX is normally used to save time by directly to going to the column but the updating a index taking alot 
+ITS normally used for the table which we dont frequently update 
+
+SELECT * FROM CUST;
+1) CREATING A INDEX :-
+CREATE INDEX last_name_idx     
+ON cust(last_name);
+SELECT * FROM CUST
+WHERE  last_name ="hahaha";
+
+2) CREATING A MULTIPLE COLUMN INDEX :-
+CREATE INDEX last_name_first_name_idx
+ON cust(last_name,first_name);
+
+SELECT * FROM CUST
+WHERE first_name = "hehe" AND last_name ="hahaha";
+
+3) DROPPING A INDEX :-
+ALTER TABLE CUST
+DROP INDEX last_name_idx;
+
+4) SHOWING THE NUMBERS TO INDEX WE HAVE CREATED 
+SHOW INDEXES FROM cust;
+
+# SUB-QUERY
+SUB-QUERY IS THe type of query which is persent inside other query
+
+SELECT first_name,last_name,hourly_pay,
+(SELECT  AVG(hourly_pay) from emp) AS "AVG PAY"
+from emp;
+
+SELECT first_name,last_name,hourly_pay 
+FROM EMP 
+WHERE hourly_pay > (SELECT  AVG(hourly_pay) from emp) ;
+
+SELECT * from trans;
+
+SELECT  first_name,last_name 
+from cust 
+where cust_id IN 
+(SELECT cust_id from trans 
+where cust_id IS NOT NULL);
+
+
+# GROUP BY 
+
+GROUP BY normally uses the aggregate functions ex.SUM(),MIN(),MAX(),AVG(),COUNT()
+
+DROP TABLE  trans;
+
+CREATE TABLE trans (
+    trans_id INT PRIMARY KEY AUTO_INCREMENT,
+    amount DECIMAL(5, 2),
+    cust_id INT,
+    order_date DATE,
+    FOREIGN KEY (cust_id) 
+    REFERENCES cust(cust_id)
+);
+
+INSERT INTO trans
+VALUES  (1000, 4.99, 3, "2023-01-01"),
+  (1001, 2.89, 2, "2023-01-01"),
+  (1002, 3.38, 3, "2023-01-02"),
+  (1003, 4.99, 1, "2023-01-02"),
+  (1004, 1.00, NULL, "2023-01-03"),
+  (1005, 2.49, 4, "2023-01-03"),
+  (1006, 5.48, NULL, "2023-01-03");
+        
+SELECT * FROM trans;
+
+1) SUM WITH GROUPBY:
+SELECT SUM(amount),order_date 
+from trans
+GROUP BY order_date;
+
+2) MAX WITH GROUPBY:
+SELECT MAX(amount),order_date 
+from trans
+GROUP BY order_date;
+
+3) MIN WITH GROUPBY:
+SELECT MIN(amount),order_date 
+from trans
+GROUP BY order_date;
+
+4) COUNT WITH GROUPBY :
+SELECT COUNT(amount),order_date 
+from trans
+GROUP BY order_date;
+
+
+SELECT SUM(amount),cust_id
+from trans
+group by cust_id;
+
+SELECT COUNT(amount),cust_id
+from trans
+group by cust_id								# NORMALLY WHEN USING GROUPBY AND we have to use WHERE we dont use WHERE we use HAVING 
+HAVING COUNT(amount)>1 and cust_id is not null;   
+
+# ROLLUP :
+
+ROLLUP is a extension of the GROUP BY clause
+which creates another row and shows the GRAND Total 
+
+Select SUM(amount),order_date
+from trans
+group by order_date with ROLLUP;
+
+Select SUM(trans_id),order_date
+from trans
+group by order_date with ROLLUP;
+
+Select COUNT(trans_id)as "#  of order ",cust_id 
+from trans
+group by cust_id with ROLLUP;
+
+Select SUM(hourly_pay) AS "Hourly pay" ,emp_id
+from emp 
+GROUP BY emp_id with ROLLUP;
+
+# ON DELETE :
+
+ON DELETE SET NULL = when a FK is deleted,replace FK with null
+ON DELETE CASCADE = when a FK is deleted , delete the row 
+
+SELECT * FROM trans;
+SELECT * FROM CUST;
+
+SET foreign_key_checks = 0;
+DELETE FROM cust
+WHERE cust_id = 4;
+
+SET foreign_key_checks = 1;
+
+insert into cust 
+values(4 ,"poopy","pop",NULL,"POP@GMAIL.COM"); 
+
+CREATE TABLE trans (
+    trans_id INT PRIMARY KEY AUTO_INCREMENT,
+    amount DECIMAL(5, 2),
+    cust_id INT,
+    order_date DATE,
+    FOREIGN KEY (cust_id) 
+    REFERENCES cust(cust_id)
+    ON DELETE SET NULL
+);
+
+ALTER TABLE trans DROP FOREIGN KEY trans_ibfk_1;
+
+ALTER TABLE TRANS add constraint trans_ibfk_1 
+FOREIGN KEY (cust_id) REFERENCES cust(cust_id)
+ON DELETE SET NULL;
+
+DELETE FROM cust
+WHERE cust_id = 4;
+
+ALTER TABLE trans DROP FOREIGN KEY trans_ibfk_1;
+
+update trans
+set cust_id = 4
+where trans_id = 1005;
+
+ALTER TABLE TRANS 
+ADD CONSTRAINT trans_ibfk_1
+FOREIGN KEY(cust_id) REFERENCES cust(cust_id)
+ON DELETE CASCADE;
+
+DELETE FROM cust
+where cust_id = 4;
+
+# STORED PROCEDURES 
+
+is a prepared SQL code that you can save great if there is query that you write often 
+--it reduces network traffic
+--increase performances
+--secure , admin can grant permission to use 
+-- increase memory usasge of every connection
+We have to change the DELIMITER every time like we have done below 
+
+DELIMITER $$
+CREATE PROCEDURE get_customer()
+BEGIN 
+		SELECT * FROM cust;
+END$$
+
+DELIMITER ;
+
+CALL get_customer();                          # use to call the STORED PROCEDURES
+DROP PROCEDURE get_customer;
+
+DELIMITER $$
+CREATE PROCEDURE find_customer(IN id INT)
+BEGIN 
+		SELECT * FROM cust
+        WHERE cust_id = id;
+END$$
+DELIMITER ;
+
+call find_customer(3);
+DROP PROCEDURE find_customer;
+
+DELIMITER $$
+CREATE PROCEDURE find_customer(IN f_name varchar(50),IN l_name VARCHAR(50))
+BEGIN 
+		SELECT * FROM cust
+        WHERE first_name = f_name AND last_name = l_name;
+END$$
+DELIMITER ;
+
+call find_customer("hehe","hahaha");
+
+# TRIGGER 
+
+TRIGGER is when an event happens, do somethings
+(INSERT,DELETE,UPDATE)
+benefits = checks data,handles errors,auditing tables
+
+SELECT * FROM emp;
+
+alter table emp 
+add column salary decimal(10,2) after hourly_pay;
+
+update emp 
+set salary = hourly_pay * 2080;
+
+CREATE TRIGGER before_hourly_pay_update
+BEFORE UPDATE ON emp 
+FOR EACH ROW 
+SET NEW.salary= (NEW.hourly_pay*2080);
+
+show TRIGGERS;
+
+update emp 
+set hourly_pay = 50
+where emp_id=1;
+
+update emp 
+set hourly_pay = hourly_pay +1;
+
+delete from emp 
+where emp_id = 5;
+
+SELECT * from emp;
+
+CREATE TRIGGER before_hourly_pay_insert 
+BEFORE INSERT ON emp 
+FOR EACH ROW
+SET  NEW.salary = (NEW.hourly_pay*2080)
+
+INSERT into emp ()
+values(5,"joke","push",15,NULL,"cleaner","2025-03-07",1);
+
+create table expenses (
+	expenses_id INT PRIMARY KEY,
+    expenses_name varchar(50),
+    expenses_total DECIMAL(10,2)
+);
+insert into expenses 
+values(1,"salaries",0),
+	  (2,"supplies",0),
+      (3,"taxes",0);
+      
+update expenses 
+set expenses_total = (select SUM(salary) from emp)
+where expenses_name = "salaries";
+select * from expenses;
+
+create trigger after_salary_delete
+after delete on emp
+FOR EACH ROW
+update expenses 
+set expenses_total = expenses_total - OLD.salary
+where expense_name = "salaries";
+
+delete from emp 
+where emp_id =5;
+SELECT * FROM expenses;
+
+create trigger after_salary_insert 
+after insert on emp 
+FOR EACH ROW
+update expenses
+set expenses_total = expenses_total +NEW.salary
+Where expenses_name = "salaries";
+
+create TRIGGER after_salary_update
+after update on emp 
+FOR EACH ROW
+update expenses
+set expenses_total = expenses_total +(NEW.salary - OLD.salary)
+WHere expenses_name = "salaries";
+
+update emp 
+set hourly_pay = 100
+where emp_id = 2;
+
+SELECT * FROM expenses;
