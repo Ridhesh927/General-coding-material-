@@ -1,0 +1,530 @@
+function greet(name, callback) {
+    console.log("Hello, " + name);
+    callback();
+}
+
+function sayBye() {
+    console.log("Goodbye!");
+}
+
+greet("Ajay", sayBye);
+
+OUTPUT
+Hello, Ajay
+Goodbye!
+Here, sayBye() is passed as a callback to greet(), which executes after the greeting.
+
+How Do Callbacks Work in JavaScript?
+JavaScript executes code line by line (synchronously), but sometimes we need to delay execution or wait for a task to 
+complete before running the next function. Callbacks help achieve this by passing a function that is executed later.
+
+Callbacks for Asynchronous Execution
+
+console.log("Start");
+
+setTimeout(function () {
+    console.log("Inside setTimeout");
+}, 2000);
+
+console.log("End");
+Output
+
+Start
+End
+Inside setTimeout  (after 2 seconds)
+setTimeout() is an asynchronous function that takes a callback to execute after 2 seconds.
+The rest of the code continues executing without waiting.
+Where Are Callbacks Used?
+1. Handling Asynchronous Operations
+Callbacks are widely used in
+
+API requests (fetching data)
+Reading files (Node.js file system)
+Event listeners (clicks, keyboard inputs)
+Database queries (retrieving data)
+2. Callbacks in Functions Handling Operations
+When a function needs to execute different behaviors based on input, callbacks make the function flexible.
+
+function calc(a, b, callback) {
+    return callback(a, b);
+}
+
+function add(x, y) {
+    return x + y;
+}
+
+function mul(x, y) {
+    return x * y;
+}
+
+console.log(calc(5, 3, add));    
+console.log(calc(5, 3, mul));
+
+Output
+8
+15
+calculate() receives two numbers and a function (add or multiply).
+The passed function is executed inside calculate().
+3. Callbacks in Event Listeners
+JavaScript is event-driven, and callbacks handle user interactions like clicks and key presses
+
+document.getElementById("myButton").addEventListener("click", function () {
+    console.log("Button clicked!");
+});
+Here, the anonymous function is a callback that runs when the button is clicked.
+
+4. Callbacks in API Calls (Fetching Data)
+Callbacks are useful when retrieving data from APIs.
+function fetch(callback) {
+    fetch("https://jsonplaceholder.typicode.com/todos/1")
+        .then(response => response.json())
+        .then(data => callback(data))
+        .catch(error => console.error("Error:", error));
+}
+
+function handle(data) {
+    console.log("Fetched Data:", data);
+}
+
+fetch(handle);
+
+fetchData() gets data from an API and passes it to handleData() for processing.
+
+Problems with Callbacks
+Although callbacks are useful, they have some drawbacks.
+
+1. Callback Hell (Nested Callbacks)
+When callbacks are nested deeply, the code becomes unreadable and hard to maintain.
+
+function step1(callback) {
+    setTimeout(() => {
+        console.log("Step 1 completed");
+        callback();
+    }, 1000);
+}
+
+function step2(callback) {
+    setTimeout(() => {
+        console.log("Step 2 completed");
+        callback();
+    }, 1000);
+}
+
+function step3(callback) {
+    setTimeout(() => {
+        console.log("Step 3 completed");
+        callback();
+    }, 1000);
+}
+
+step1(() => {
+    step2(() => {
+        step3(() => {
+            console.log("All steps completed");
+        });
+    });
+});
+
+
+As the number of steps increases, the nesting grows deeper, making the code difficult to manage.
+
+2. Error Handling Issues in Callbacks
+Error handling can get messy when dealing with nested callbacks.
+function divide(a, b, callback) {
+    if (b === 0) {
+        callback(new Error("Cannot divide by zero"), null);
+    } else {
+        callback(null, a / b);
+    }
+}
+
+function result(error, result) {
+    if (error) {
+        console.log("Error:", error.message);
+    } else {
+        console.log("Result:", result);
+    }
+}
+
+divide(10, 2, result);
+divide(10, 0, result);
+
+Output
+Result: 5
+Error: Cannot divide by zero
+Handling errors inside callbacks can complicate code readability.
+
+Alternatives to Callbacks
+1. Promises (Fixing Callback Hell)
+Promises provide a better way to handle asynchronous tasks without deep nesting.
+
+function step1() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            console.log("Step 1 completed");
+            resolve();
+        }, 1000);
+    });
+}
+
+function step2() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            console.log("Step 2 completed");
+            resolve();
+        }, 1000);
+    });
+}
+
+function step3() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            console.log("Step 3 completed");
+            resolve();
+        }, 1000);
+    });
+}
+
+step1()
+    .then(step2)
+    .then(step3)
+    .then(() => console.log("All steps completed"));
+	
+	Promises make code more readable by chaining .then() instead of nesting callbacks.
+
+2. Async/Await (Cleaner Alternative)
+async/await provides an even cleaner way to handle asynchronous code.
+
+
+async function processSteps() {
+    await step1();
+    await step2();
+    await step3();
+    console.log("All steps completed");
+}
+
+processSteps();
+async/await makes code look synchronous, improving readability.
+
+
+Solutions to Callback Hell
+Modularizing Code
+We should break down the code into small parts and reusable functions. This will reduce the depth of nesting of the function making it easier to understand.
+
+function getData(callback) {
+    getDataFromAPI(callback);
+}
+
+function parseAndProcessData(data, callback) {
+    parseData(data, function (parsedData) {
+        processData(parsedData, callback);
+    });
+}
+
+getData(function (data) {
+    parseAndProcessData(data, function (finalData) {
+        saveData(finalData, function (savedData) {
+            sendEmail(savedData, function (response) {
+                console.log('Email sent!', response);
+            });
+        });
+    });
+});
+Promises
+Promises can help handle the asynchronous code. Promises represent the failure of an asynchronous operation.
+
+getDataFromAPI()
+    .then(parseData)
+    .then(processData)
+    .then(saveData)
+    .then(sendEmail)
+    .then(response => {
+        console.log('Email sent!', response);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+Async/Await
+Async/Await was introduced in ES8, which simplifies the syntax for working the promises. With async/await, we can write asynchronous code that looks like synchronous code, making it more readable and easier to manage.
+
+async function handleData() {
+    try {
+        const data = await getDataFromAPI();
+        const parsedData = await parseData(data);
+        const processedData = await processData(parsedData);
+        const savedData = await saveData(processedData);
+        const response = await sendEmail(savedData);
+        console.log('Email sent!', response);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+handleData();
+
+4. Promise.any() Method
+Promise.any() Method resolves with the first fulfilled promise. If all are rejected, it rejects with an AggregateError.
+
+
+
+
+Promise.any([
+    Promise.reject("Task 1 failed"),
+    Promise.resolve("Task 2 completed"),
+    Promise.resolve("Task 3 completed")
+])
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error));
+
+Output
+Task 2 completed
+5. Promise.resolve() Method
+Promise.resolve() Method returns a promise that resolves with the given value.
+
+
+
+
+Promise.resolve("Immediate success")
+    .then((value) => console.log(value));
+
+Output
+Immediate success
+6. Promise.reject() Method
+Promise.reject() Method returns a promise that immediately rejects with a given reason.
+
+
+Promise.reject("Immediate failure")
+    .catch((error) => console.error(error));
+Output:
+
+Immediate failure
+7. Promise.finally() Method
+Promise.finally() Method runs a cleanup or final code block regardless of the promise’s result (fulfilled or rejected).
+
+
+
+
+Promise.resolve("Task completed")
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error))
+    .finally(() => console.log("Cleanup completed"));
+
+Output
+Task completed
+Cleanup completed
+8. Chaining with Promise.prototype.then() Method
+Allows sequential execution of promises, passing results to the next .then() Method.
+
+
+
+
+Promise.resolve(5)
+    .then((value) => value * 2) // Multiplies by 2
+    .then((value) => value + 3) // Adds 3
+    .then((finalValue) => console.log(finalValue)); // Logs: 13
+
+Output
+13
+9. Sequential Execution with Array.prototype.reduce()
+
+
+
+let tasks = [1, 2, 3];
+tasks.reduce((prevPromise, current) => {
+    return prevPromise.then(() => {
+        return new Promise((resolve) => {
+            console.log(`Processing task ${current}`);
+            setTimeout(resolve, 500); // Simulate async task
+        });
+    });
+}, Promise.resolve());
+Output
+
+Processing task 1
+Processing task 2
+Processing task 3
+10. Dynamic Promise Creation
+Creating and resolving promises dynamically for runtime-based decisions.
+
+
+function asyncTask(taskName) {
+    return new Promise((resolve) => {
+        setTimeout(() => 
+            resolve(`${taskName} completed`), 1000);
+    });
+}
+asyncTask("Download File").then((result) => 
+    console.log(result));
+Output:
+
+ Download File completed
+11. Timeout Handling with Promise.race() Method
+Using Promise.race() Method to set a timeout for a task.
+
+
+let fetchData = new Promise((resolve) =>
+    setTimeout(() =>
+        resolve("Data loaded"), 3000));
+let timeout = new Promise((_, reject) =>
+    setTimeout(() =>
+        reject("Timeout!"), 2000));
+Promise.race([fetchData, timeout])
+    .then((result) =>
+        console.log(result))
+    .catch((error) =>
+        console.error(error));
+Output
+
+Timeout!
+12. Handling Multiple Failures with Promise.allSettled() Method
+Works when you need to process all results, even if some promises fail.
+
+
+
+
+Promise.allSettled([
+    Promise.resolve("Task 1 done"),
+    Promise.reject("Task 2 failed"),
+    Promise.resolve("Task 3 done")
+])
+    .then((results) => console.log(results));
+
+Output
+[
+  { status: 'fulfilled', value: 'Task 1 done' },
+  { status: 'rejected', reason: 'Task 2 failed' },
+  { status: 'fulfilled', value: 'Task 3 done' }
+]
+13. Combining Promises with Parallel and Sequential Execution
+Run some promises in parallel, then process their results sequentially.
+
+
+Promise.all([
+    new Promise((resolve) =>
+        setTimeout(() =>
+            resolve("Task A done"), 1000)),
+    new Promise((resolve) =>
+        setTimeout(() =>
+            resolve("Task B done"), 500))
+])
+    .then(([resultA, resultB]) => {
+        console.log(resultA, resultB);
+        return new Promise((resolve) =>
+            setTimeout(() => resolve("Final Task done"), 700));
+    })
+    .then((finalResult) =>
+        console.log(finalResult));
+Output
+
+Task A done Task B done
+Final Task done
+14. Wrapping Callbacks into Promises
+Convert callback-based async functions into promises.
+
+
+
+
+function loadData(callback) {
+    setTimeout(() => 
+        callback("Data loaded"), 1000);
+}
+function promisifiedLoadData() {
+    return new Promise((resolve) => {
+        loadData((result) => 
+            resolve(result));
+    });
+}
+promisifiedLoadData().then((data) => 
+    console.log(data));
+Output
+
+Data loaded
+
+Error Handling in Chaining
+
+Promise.resolve(5)
+    .then((num) => {
+        console.log(`Value: ${num}`);
+        throw new Error("Something went wrong!");
+    })
+    .then((num) => {
+        console.log(`This won't run`);
+    })
+    .catch((error) => {
+        console.error(`Error: ${error.message}`);
+    });
+Output:
+
+Value: 5
+Error: Something went wrong!
+Chaining with Dependent Tasks
+
+function fetchUser(userId) {
+    return Promise.resolve({ id: userId, name: "GFG" });
+}
+
+function fetchOrders(user) {
+    return Promise.resolve([{ orderId: 1, userId: user.id }]);
+}
+
+fetchUser(101)
+    .then((user) => {
+        console.log(`User: ${user.name}`);
+        return fetchOrders(user);
+    })
+    .then((orders) => {
+        console.log(`Orders: ${orders.length}`);
+    })
+    .catch((error) => console.error(error));
+Output:
+
+User: GFG
+Orders: 1
+Advanced Usage: Parallel and Sequential Tasks in a Chain
+You can combine Promise.all() with chaining for efficient execution.
+
+
+Promise.all([
+    Promise.resolve("Task 1 done"),
+    Promise.resolve("Task 2 done")
+])
+    .then(([result1, result2]) => {
+        console.log(result1, result2);
+        return Promise.resolve("Final Task done");
+    })
+    .then((finalResult) => console.log(finalResult))
+    .catch((error) => console.error(error));
+Output:
+
+Task 1 done Task 2 done
+Final Task done	
+
+
+
+Promise.all():
+
+Please note that the order of the resulting array members is the same as in its source promises. Even though the first promise takes the longest time to resolve, it’s still first in the array of results.
+It is important to observe that the sequence of elements in the resulting array corresponds to that of the source promises. This implies that although the initial promise may take the most time to resolve, it will still be the first member in the outcome array.
+
+let us Look at another example in which we are fetching different url of different GitHub profiles.
+
+
+
+
+const urls = [
+  'https://api.github.com/users/prakashsakari',
+  'https://api.github.com/users/AshishJangra27',
+];
+const requests = urls.map(url => fetch(url));
+Promise.all(requests)
+  .then(responses => responses.forEach(
+    response => console.log(`${response.url}: ${response.status}`)
+  )).catch(err => console.log(err.message));
+
+The output of the above code will be 
+https://api.github.com/users/prakashsakari: 200
+https://api.github.com/users/AshishJangra27: 200
+
+
+So to copy a github folder steps :
+	1] git clone (link of the github to copy )
